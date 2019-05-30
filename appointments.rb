@@ -4,6 +4,8 @@ require 'tty-prompt'
 def create_app
     prompt = TTY::Prompt.new
 
+    puts DshsData.appointments
+
     # which service?
     # which service provider?
     # check if service provider offers the specified service

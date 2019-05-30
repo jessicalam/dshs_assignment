@@ -16,9 +16,35 @@ class DshsData
         @appointments = []
         @availability_blocks = []
     end
+
+    def add_service(name, price, length)
+        # code to add a service to services dictionary
+    end
+
+    def remove_service(name)
+        # code to remove a service from services dictionary
+    end
+
+    def add_service_provider(name, phone, services)
+        # code to add a service provider to service_providers dictionary
+    end
+
+    def remove_service_provider(name)
+        # code to remove a service provider from service_providers dictionary
+    end
+
+    def create_appointment(date, start_time, service_name, service_provider_name, client_name)
+        # code to add an appointment to the appointments array
+    end
+
+    def add_availability(name, date, start_time, end_time)
+        # code to add availability to availability_blocks array
+    end
+
+    def remove_availability(name)
+        # code to remove availability from availability_blocks array
+    end
 end
-
-
 
 
 
@@ -40,5 +66,5 @@ elsif ARGV[0] == 'availability:remove'
 elsif ARGV[0] == 'schedule:view'
     prompt_view_sch()       # call schedule.rb 'prompt_view'
 else
-  raise "Unknown command #{ARGV[0]}"
+    raise "Unknown command #{ARGV[0]}"
 end
