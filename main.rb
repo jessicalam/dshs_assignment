@@ -18,6 +18,7 @@ class DshsData
     end
 
     def add_service(name, price, length)
+
         # code to add a service to services dictionary
     end
 
@@ -38,6 +39,7 @@ class DshsData
     end
 
     def add_availability(name, date, start_time, end_time)
+
         # code to add availability to availability_blocks array
     end
 
