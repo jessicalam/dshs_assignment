@@ -18,7 +18,7 @@ def prompt_add_av
 
         #if one-off, add to availability_blocks array
     elsif add_reoccur == 'no'
-        DshsData.instance.add_availability(add_service_provider, add_service_time, start_time, end_time, add_avalibility)
+        DshsData.instance.add_availability(add_service_provider, add_service_time, start_time, end_time, add_availability)
     end
 
 
