@@ -82,14 +82,14 @@ class DshsData
             "price" => price,
             "length" => length
         }
-        puts '#{name} has successfully been added to services!'.green
+        puts "#{name} has successfully been added to services!".green
         puts services.inspect.yellow
     end
 
     def remove_service(name)
         # code to remove a service from services dictionary
         services.delete(name)
-        puts '#{name} has successfully been removed from services'.green
+        puts "#{name} has successfully been removed from services".green
         puts services.inspect.yellow
     end
 
@@ -100,14 +100,14 @@ class DshsData
             "services" => services,
             "availability" => availability
         }
-        puts '#{name} has successfully been added to service providers!'.green
+        puts "#{name} has successfully been added to service providers!".green
         puts service_providers.inspect.yellow
     end
 
     def remove_service_provider(name)
         # code to remove a service provider from service_providers dictionary
         service_providers.delete(name)
-        puts '#{name} has successfully been removed from service providers'.green
+        puts "#{name} has successfully been removed from service providers".green
         puts service_providers.inspect.yellow
     end
 
