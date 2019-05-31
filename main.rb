@@ -71,7 +71,15 @@ class DshsData
                 "service_provider_name" => "yeet",
             }
         ]
-        @availability_blocks = []
+        @availability_blocks = [
+            {
+                "name" => "",
+                "date" => "",
+                "start_time" => "",
+                "end_time" => "",
+                "is_available" => "",
+            }
+        ]
     end
 
     attr_accessor :services, :service_providers, :appointments, :availability_blocks
@@ -130,12 +138,27 @@ class DshsData
         puts
     end
 
-    def add_availability(name, date, start_time, end_time)
+    def add_availability(name, date, start_time, end_time, is_available)
+        app_new = {
+            "name" => name,
+            "date" => date,
+            "start_time" => start_time,
+            "end_time" => end_time,
+            "is_available" => is_available,
+        }
+        @availability_blocks << app_new
+        puts @availability_blocks.inspect.yellow
 
         # code to add availability to availability_blocks array
     end
 
-    def remove_availability(name)
+    def remove_availability(name,requested_time, start_time, end_time)
+        @availability_blocks.delete(name)
+        @availability_blocks.delete(requested_time)
+        @availability_blocks.delete(start_time)
+        @availability_blocks.delete(end_time)
+
+        puts @availability_blocks.inspect.yellow
         # code to remove availability from availability_blocks array
     end
 end
