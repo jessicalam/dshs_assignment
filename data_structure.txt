@@ -26,11 +26,9 @@ appointments:
     {
         "date" : 0 (date enum),
         "start_time" : 0 (time enum),
-                    "end_time" : 0 (time enum),     *** MAYBE DONT NEED THIS
         "service_name" : "",
         "client_name" : "",
         "service_provider_name" : "",
-                    "is_recurring" : false          *** MAYBE DONT NEED THIS
     }
 ]
 
