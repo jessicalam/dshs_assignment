@@ -82,15 +82,17 @@ class DshsData
             "price" => price,
             "length" => length
         }
-        puts "#{name} has successfully been added to services!".green
-        puts services.inspect.yellow
+        puts "#{name} has successfully been added to services!".colorize(:green ).colorize( :background => :black)
+        puts services.inspect.blue
+        puts
     end
 
     def remove_service(name)
         # code to remove a service from services dictionary
         services.delete(name)
-        puts "#{name} has successfully been removed from services".green
-        puts services.inspect.yellow
+        puts "#{name} has successfully been removed from services".colorize(:green ).colorize( :background => :black)
+        puts services.inspect.blue
+        puts
     end
 
     def add_service_provider(name, phone, services, availability)
@@ -100,15 +102,17 @@ class DshsData
             "services" => services,
             "availability" => availability
         }
-        puts "#{name} has successfully been added to service providers!".green
-        puts service_providers.inspect.yellow
+        puts "#{name} has successfully been added to service providers!".colorize(:green ).colorize( :background => :black)
+        puts service_providers.inspect.blue
+        puts
     end
 
     def remove_service_provider(name)
         # code to remove a service provider from service_providers dictionary
         service_providers.delete(name)
-        puts "#{name} has successfully been removed from service providers".green
-        puts service_providers.inspect.yellow
+        puts "#{name} has successfully been removed from service providers".colorize(:green ).colorize( :background => :black)
+        puts service_providers.inspect.blue
+        puts
     end
 
     def create_appointment(date, start_time, service_name, service_provider_name, client_name)
@@ -121,8 +125,9 @@ class DshsData
             "client_name" => client_name
         }
         @appointments << app_new
-        puts 'Your appoinment has been scheduled!'.green
-        puts @appointments.inspect.yellow
+        puts 'Your appoinment has been scheduled!'.colorize(:green ).colorize( :background => :black)
+        puts @appointments.inspect.blue
+        puts
     end
 
     def add_availability(name, date, start_time, end_time)
@@ -137,23 +142,33 @@ end
 
 
 
+tasks = ['Add service', 'Remove service', 'Add service provider', 'Remove service provider', 'Schedule appointment', 'Create availability block', 'Delete availability block', 'View schedule', 'Exit program']
+prompt = TTY::Prompt.new
+user_is_done = false
 
-if ARGV[0] == 'services:add'
-    prompt_add_serv()       # call services.rb 'prompt_add'
-elsif ARGV[0] == 'services:remove'
-    prompt_remove_serv()    # call services.rb 'prompt_remove'
-elsif ARGV[0] == 'service_providers:add'
-    prompt_add_sp()         # call service_providers.rb 'prompt_add'
-elsif ARGV[0] == 'service_providers:remove'
-    prompt_remove_sp()      # call service_providers.rb 'prompt_remove'
-elsif ARGV[0] == 'appointments:create'
-    create_app()            # call appointments.rb 'create'
-elsif ARGV[0] == 'availability:add'
-    prompt_add_av()         # call availability.rb 'prompt_add'
-elsif ARGV[0] == 'availability:remove'
-    prompt_remove_av()      # call availability.rb 'prompt_remove'
-elsif ARGV[0] == 'schedule:view'
-    prompt_view_sch()       # call schedule.rb 'prompt_view'
-else
-    raise "Unknown command #{ARGV[0]}"
+while !user_is_done
+    user_task = prompt.select("What would you like to do?", tasks, cycle: true)
+    case user_task
+    when tasks[0]
+        prompt_add_serv()       # call services.rb 'prompt_add'
+    when tasks[1]
+        prompt_remove_serv()    # call services.rb 'prompt_remove'
+    when tasks[2]
+        prompt_add_sp()         # call service_providers.rb 'prompt_add'
+    when tasks[3]
+        prompt_remove_sp()      # call service_providers.rb 'prompt_remove'
+    when tasks[4]
+        create_app()            # call appointments.rb 'create'
+    when tasks[5]
+        prompt_add_av()         # call availability.rb 'prompt_add'
+    when tasks[6]
+        prompt_remove_av()      # call availability.rb 'prompt_remove'
+    when tasks[7]
+        prompt_view_sch()       # call schedule.rb 'prompt_view'
+    when tasks[8]
+        user_is_done = true
+    else
+        puts 'this task does not exist'
+        puts
+    end
 end
