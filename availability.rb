@@ -3,13 +3,13 @@ require 'tty-prompt'
 def prompt_add_av
     prompt = TTY::Prompt.new
     # which service provider?
-    add_service_provider = prompt.ask("Which service provider?")
+    add_service_provider = prompt.ask("Which service provider?").titleize
     # what time?
     add_service_time = prompt.ask("What time?")
     # reoccurring or one-off availability change?
-    add_reoccur = prompt.ask("Is this a reoccurring appointment?")
+    add_reoccur = prompt.ask("Is this a reoccurring appointment?").downcase
     #ask for availability
-    add_availability = prompt.ask("Are you available?")
+    add_availability = prompt.ask("Are you available?").downcase
     start_time = 60
     end_time = 60
     #if reoccurring, edit the specified service provider's availability dictionary within the service_providers dictionary
@@ -32,11 +32,11 @@ end
 def prompt_remove_av
     prompt = TTY::Prompt.new
     # which service provider?
-    requested_service_provider = prompt.ask("Which service provider did you request?")
+    requested_service_provider = prompt.ask("Which service provider did you request?").titleize
     # what time?
     requested_service_time = prompt.ask("What time did you request?")
     # reoccurring or one-off availability change?
-    requested_reoccur = prompt.yes?("Is this a reoccurring appointment did you request?")
+    requested_reoccur = prompt.yes?("Is this a reoccurring appointment did you request?").downcase
     start_time = 60
     end_time = 60
     if requested_reoccur == 'yes'  #if reoccurring, edit the specified service provider's availability dictionary within the service_providers dictionary
