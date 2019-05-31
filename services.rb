@@ -14,8 +14,8 @@ def prompt_add_serv
         end
     end
 
-    price_in = prompt.ask('Price (in dollars):')
-    length_in = prompt.ask('Length (in hours):')
+    price_in = prompt.ask('Price (in dollars):').to_i()
+    length_in = prompt.ask('Length (in hours):').to_i()
 
     DshsData.instance.add_service(name_in, price_in, length_in)
 end
