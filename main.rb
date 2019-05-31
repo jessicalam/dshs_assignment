@@ -11,10 +11,83 @@ class DshsData
 
     def initialize
         # will be initialized with sample data, see data_structure
-        @services = {}
-        @service_providers = {}
-        @appointments = []
+        @services = {
+            "hugs" => {
+                "price" => 1,
+                "length" => 1
+            },
+            "kisses" => {
+                "price" => 2,
+                "length" => 2
+            }
+        }
+        @service_providers = {
+            "boi" => {
+                "phone" => "1",
+                "services" => ["hugs"],
+                "availability" => {
+                                    "monday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "tuesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "wednesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "thursday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "friday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "saturday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "sunday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+                                }
+            },
+            "waluigi" => {
+                "phone" => "2",
+                "services" => ["kisses"],
+                "availability" => {
+                                    "monday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "tuesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "wednesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "thursday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "friday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "saturday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "sunday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+                                }
+            },
+            "yeet" => {
+                "phone" => "3",
+                "services" => ["hugs", "kisses"],
+                "availability" => {
+                                    "monday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "tuesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "wednesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "thursday" => [true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true],
+                                    "friday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "saturday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "sunday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+                                }
+            }
+        }
+        @appointments = [
+            {
+                "date" => 18235,
+                "start_time" => 9,
+                "service_name" => "kisses",
+                "client_name" => "yoshi",
+                "service_provider_name" => "yeet",
+            }
+        ]
         @availability_blocks = []
+    end
+
+    def services
+        @services
+    end
+
+    def service_providers
+        @service_providers
+    end
+
+    def appointments
+        @appointments
+    end
+
+    def availability_blocks
+        @availability_blocks
     end
 
     def add_service(name, price, length)
@@ -36,6 +109,15 @@ class DshsData
 
     def create_appointment(date, start_time, service_name, service_provider_name, client_name)
         # code to add an appointment to the appointments array
+        app_new = {
+            "date" => date,
+            "start_time" => start_time,
+            "service_name" => service_name,
+            "service_provider_name" => service_provider_name,
+            "client_name" => client_name
+        }
+        @appointments << app_new
+        puts @appointments.inspect.yellow
     end
 
     def add_availability(name, date, start_time, end_time)
