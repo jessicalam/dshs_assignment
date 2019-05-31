@@ -71,7 +71,15 @@ class DshsData
                 "service_provider_name" => "yeet",
             }
         ]
-        @availability_blocks = []
+        @availability_blocks = [
+            {
+                "name" => "Person 1",
+                "date" => "124231",
+                "start_time" => "12:30",
+                "end_time" => "1:30",
+                "is_avaliable" => "",
+            }
+        ]
     end
 
     def services
@@ -120,12 +128,23 @@ class DshsData
         puts @appointments.inspect.yellow
     end
 
-    def add_availability(name, date, start_time, end_time)
+    def add_availability(name, date, start_time, end_time, is_available)
+        app_new = {
+            "name" => name,
+            "date" => date,
+            "start_time" => start_time,
+            "end_time" => end_time,
+            "is_available" => is_available,
+        }
+        @availability_blocks << app_new
+        puts @availability_blocks.inspect.yellow
 
         # code to add availability to availability_blocks array
     end
 
     def remove_availability(name)
+        @availability_blocks.delete(name)
+        puts @availability_blocks.inspect.yellow
         # code to remove availability from availability_blocks array
     end
 end
