@@ -3,6 +3,9 @@ require 'date'
 require 'colorize'
 
 
+# if recurring, check base schedule, if no conflicts, check appointments -> no need to check availability_blocks
+# if one-off, check availability blocks, if none, check base schedule, then appointments
+
 def create_app
     prompt = TTY::Prompt.new
 
@@ -25,6 +28,13 @@ def create_app
     end
 
     user_sp = prompt.select("Which service provider are you making an appointment with?", possible_service_providers, cycle: true)
+
+    recurring_or_one_off = prompt.select("Is this a recurring (weekly) appointment? Or a one-off appointment?", ['recurring', 'one-off'], cycle: true)
+    if recurring_or_one_off == 'recurring'
+        is_recurring = true
+    else
+        is_recurring = false
+    end
 
     # what date and time? reoccurring or one-off appointment? check for conflicts while doing so
     conflict_exists = true
@@ -62,8 +72,35 @@ def create_app
             user_time += 12
         end
 
+        # check for conflicts in service_provider's availability blocks
+        should_continue = false
+        base_availability_override = false
+        DshsData.instance.availability_blocks.each do |av|
+            # possibly remove if and elsif, and convert else into one if statement
+            # if is_recurring && av['date'].to_day() != user_day
+                # next
+            if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
+                next
+            else
+                if user_time > av['start_time'] && user_time < av['end_time']
+                    if av['is_available'] && !is_recurring
+                        base_availability_override = true
+                        break
+                    elsif av['is_available'] && is_recurring
+                        next
+                    else
+                        puts 'The service provider you requested is not available at this time.'.red
+                        puts 'Please choose a different time or \'q\' to quit.'.red
+                        should_continue = true
+                        break
+                    end
+                end
+            end
+        end
+        next if should_continue
+
         # check for conflicts in service_provider's base availability
-        if !DshsData.instance.service_providers[user_sp]['availability'][user_day][user_time]
+        if !DshsData.instance.service_providers[user_sp]['availability'][user_day][user_time] && !base_availability_override
             puts 'The service provider you requested is not available at this time.'.red
             puts 'Please choose a different time or \'q\' to quit.'.red
             next
@@ -72,27 +109,14 @@ def create_app
         # check for conflicts in service_provider's appointments on specified day
         should_continue = false
         DshsData.instance.appointments.each do |app|
-            if app['date'] != user_date || app['service_provider_name'] != user_sp
+            # possibly remove if and elsif, and convert else into one if statement
+            # if is_recurring && av['date'].to_day() != user_day
+                # next
+            if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
                 next
             else
                 if user_time > app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
                     puts 'The service provider you requested already has an appointment at this time.'.red
-                    puts 'Please choose a different time or \'q\' to quit.'.red
-                    should_continue = true
-                    break
-                end
-            end
-        end
-        next if should_continue
-
-        # check for conflicts in service_provider's availability blocks
-        should_continue = false
-        DshsData.instance.availability_blocks.each do |av|
-            if av['date'] != user_date || av['service_provider_name'] != user_sp
-                next
-            else
-                if user_time > av['start_time'] && user_time < av['end_time']
-                    puts 'The service provider you requested is not available at this time.'.red
                     puts 'Please choose a different time or \'q\' to quit.'.red
                     should_continue = true
                     break
