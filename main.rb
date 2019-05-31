@@ -74,37 +74,41 @@ class DshsData
         @availability_blocks = []
     end
 
-    def services
-        @services
-    end
-
-    def service_providers
-        @service_providers
-    end
-
-    def appointments
-        @appointments
-    end
-
-    def availability_blocks
-        @availability_blocks
-    end
+    attr_accessor :services, :service_providers, :appointments, :availability_blocks
 
     def add_service(name, price, length)
-
         # code to add a service to services dictionary
+        services[name] = {
+            "price" => price,
+            "length" => length
+        }
+        puts '#{name} has successfully been added to services!'.green
+        puts services.inspect.yellow
     end
 
     def remove_service(name)
         # code to remove a service from services dictionary
+        services.delete(name)
+        puts '#{name} has successfully been removed from services'.green
+        puts services.inspect.yellow
     end
 
-    def add_service_provider(name, phone, services)
+    def add_service_provider(name, phone, services, availability)
         # code to add a service provider to service_providers dictionary
+        service_providers[name] = {
+            "phone" => phone,
+            "services" => services,
+            "availability" => availability
+        }
+        puts '#{name} has successfully been added to service providers!'.green
+        puts service_providers.inspect.yellow
     end
 
     def remove_service_provider(name)
         # code to remove a service provider from service_providers dictionary
+        service_providers.delete(name)
+        puts '#{name} has successfully been removed from service providers'.green
+        puts service_providers.inspect.yellow
     end
 
     def create_appointment(date, start_time, service_name, service_provider_name, client_name)
@@ -117,6 +121,7 @@ class DshsData
             "client_name" => client_name
         }
         @appointments << app_new
+        puts 'Your appoinment has been scheduled!'.green
         puts @appointments.inspect.yellow
     end
 

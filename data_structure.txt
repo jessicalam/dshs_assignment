@@ -39,5 +39,6 @@ availability_blocks:
         "start_time" : 0 (time enum),
         "end_time" : 0 (time enum),
         "service_provider_name" : "",
+        "is_available" : false
     }
 ]
