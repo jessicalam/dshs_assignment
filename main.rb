@@ -73,11 +73,11 @@ class DshsData
         ]
         @availability_blocks = [
             {
-                "name" => "Person 1",
-                "date" => "124231",
-                "start_time" => "12:30",
-                "end_time" => "1:30",
-                "is_avaliable" => "",
+                "name" => "",
+                "date" => "",
+                "start_time" => "",
+                "end_time" => "",
+                "is_available" => "",
             }
         ]
     end
@@ -142,8 +142,12 @@ class DshsData
         # code to add availability to availability_blocks array
     end
 
-    def remove_availability(name)
+    def remove_availability(name,requested_time, start_time, end_time)
         @availability_blocks.delete(name)
+        @availability_blocks.delete(requested_time)
+        @availability_blocks.delete(start_time)
+        @availability_blocks.delete(end_time)
+
         puts @availability_blocks.inspect.yellow
         # code to remove availability from availability_blocks array
     end
