@@ -6,6 +6,20 @@ require 'colorize'
 # if recurring, check base schedule, if no conflicts, check appointments -> no need to check availability_blocks
 # if one-off, check availability blocks, if none, check base schedule, then appointments
 
+# Scenarios to test:
+#   recurring appointments:
+#       conflict with sp's base availability
+#       conflict with sp's availability blocks
+#       conflict with sp's appointments
+#       no conflicts -- should create appointment and (change sp's base availability or add recurring availability block)
+#   one-off appointments:
+#       conflict with sp's base availability
+#       conflict with sp's availability blocks
+#       conflict with sp's appointments
+#       no conflicts -- should create appointment
+
+
+
 def create_app
     prompt = TTY::Prompt.new
 
@@ -79,9 +93,9 @@ def create_app
             # possibly remove if and elsif, and convert else into one if statement
             # if is_recurring && av['date'].to_day() != user_day
                 # next
-            if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
-                next
-            else
+            # if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
+            #     next
+            if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
                 if user_time > av['start_time'] && user_time < av['end_time']
                     if av['is_available'] && !is_recurring
                         base_availability_override = true
@@ -90,7 +104,7 @@ def create_app
                         next
                     else
                         puts 'The service provider you requested is not available at this time.'.red
-                        puts 'Please choose a different time or \'q\' to quit.'.red
+                        puts 'Please choose a different date/time or \'q\' to quit.'.red
                         should_continue = true
                         break
                     end
@@ -102,7 +116,7 @@ def create_app
         # check for conflicts in service_provider's base availability
         if !DshsData.instance.service_providers[user_sp]['availability'][user_day][user_time] && !base_availability_override
             puts 'The service provider you requested is not available at this time.'.red
-            puts 'Please choose a different time or \'q\' to quit.'.red
+            puts 'Please choose a different date/time or \'q\' to quit.'.red
             next
         end
 
@@ -112,12 +126,12 @@ def create_app
             # possibly remove if and elsif, and convert else into one if statement
             # if is_recurring && av['date'].to_day() != user_day
                 # next
-            if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
-                next
-            else
+            # if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
+            #     next
+            if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
                 if user_time > app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
                     puts 'The service provider you requested already has an appointment at this time.'.red
-                    puts 'Please choose a different time or \'q\' to quit.'.red
+                    puts 'Please choose a different date/time or \'q\' to quit.'.red
                     should_continue = true
                     break
                 end
@@ -130,6 +144,33 @@ def create_app
 
     # if none, add to appointments array
     if !conflict_exists
+        if is_recurring
+            # change sp's base availability or add recurring availability block ???
+        end
+
         DshsData.instance.create_appointment(user_date, user_time, user_service, user_sp, user_name)
+    end
+end
+
+
+def convert_date_to_day(days_since_epoch)
+    weekday = days_since_epoch % 7
+    case weekday
+    when 0
+        'thursday'
+    when 1
+        'friday'
+    when 2
+        'saturday'
+    when 3
+        'sunday'
+    when 4
+        'monday'
+    when 5
+        'tuesday'
+    when 6
+        'wednesday'
+    else
+        puts 'invalid day'
     end
 end
