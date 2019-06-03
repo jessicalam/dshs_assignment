@@ -91,11 +91,6 @@ def create_app
         should_continue = false
         base_availability_override = false
         DshsData.instance.availability_blocks.each do |av|
-            # possibly remove if and elsif, and convert else into one if statement
-            # if is_recurring && av['date'].to_day() != user_day
-                # next
-            # if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
-            #     next
             if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
                 if user_time >= av['start_time'] && user_time < av['end_time']
                     if av['is_available'] && !is_recurring
@@ -124,11 +119,6 @@ def create_app
         # check for conflicts in service_provider's appointments on specified day
         should_continue = false
         DshsData.instance.appointments.each do |app|
-            # possibly remove if and elsif, and convert else into one if statement
-            # if is_recurring && av['date'].to_day() != user_day
-                # next
-            # if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
-            #     next
             if (!is_recurring && app['date'] == user_date && app['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(app['date']) == user_day)
                 if user_time >= app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
                     puts 'The service provider you requested already has an appointment at this time.'.red
@@ -147,7 +137,7 @@ def create_app
     if !conflict_exists
         if is_recurring
             # change sp's base availability
-            for index in user_time..(user_time + service_length)
+            for index in user_time..(user_time + service_length - 1)
                 DshsData.instance.service_providers[user_sp]['availability'][user_day][index] = false
             end
         end
