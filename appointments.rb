@@ -72,6 +72,7 @@ def create_app
         when 7
             user_day = 'sunday'
         else
+            puts base_day
             puts 'invalid day'
         end
         user_date = Date.strptime(base_date, "%m/%d/%Y").to_time.to_i / (60 * 60 * 24)
@@ -96,7 +97,7 @@ def create_app
             # if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
             #     next
             if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
-                if user_time > av['start_time'] && user_time < av['end_time']
+                if user_time >= av['start_time'] && user_time < av['end_time']
                     if av['is_available'] && !is_recurring
                         base_availability_override = true
                         break
@@ -128,8 +129,8 @@ def create_app
                 # next
             # if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
             #     next
-            if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
-                if user_time > app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
+            if (!is_recurring && app['date'] == user_date && app['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(app['date']) == user_day)
+                if user_time >= app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
                     puts 'The service provider you requested already has an appointment at this time.'.red
                     puts 'Please choose a different date/time or \'q\' to quit.'.red
                     should_continue = true
@@ -174,6 +175,7 @@ def convert_date_to_day(days_since_epoch)
     when 6
         'wednesday'
     else
+        puts 'weekday ' + weekday
         puts 'invalid day'
     end
 end
