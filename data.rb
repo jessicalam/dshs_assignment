@@ -156,7 +156,7 @@ class DshsData
         @availability_blocks.delete(requested_time)
         @availability_blocks.delete(start_time)
         @availability_blocks.delete(end_time)
-
+        remove_instance_variable(name) #hopefully gets rid of the entire object
         puts @availability_blocks.inspect.yellow
         # code to remove availability from availability_blocks array
     end
