@@ -6,19 +6,15 @@ require 'tty-prompt'
 # it should not be allowed to be scheduled. If the selected service provider does not offer
 # the specified service, the appointment should not be allowed to be scheduled.
 
-
-
-
 def prompt_view_sch
     prompt = TTY::Prompt.new
     appointments = DshsData.instance.appointments
     puts "----------"
-    puts "Please select a service provider to view their appointments"
-    puts "Service Providers: "
+    puts "Please select a SERVICE PROVIDER to view their appointments"
 
     # Shows each Provider Name for each
     appointments.each do |app|
-      puts "- " + app['service_provider_name']
+      puts "-      " + app['service_provider_name'].green
     end
 
     # Get Service Provider Name
@@ -33,7 +29,9 @@ def prompt_view_sch
           puts "Service Name: " + app['service_name']
           puts "Client Name: " + app['client_name']
           puts "Start Time: " + app['start_time'].to_s
-          puts "-- "
+          puts "--  "
+        else
+          puts "There is no Service Provider with that name"
         end
       end
     end
