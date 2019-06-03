@@ -157,7 +157,7 @@ def create_app
 end
 
 
-def convert_date_to_day(days_since_epoch)
+def convert_date_to_day(days_since_epoch) #number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970
     weekday = days_since_epoch % 7
     case weekday
     when 0
