@@ -145,7 +145,10 @@ def create_app
     # if none, add to appointments array
     if !conflict_exists
         if is_recurring
-            # change sp's base availability or add recurring availability block ???
+            # change sp's base availability
+            for index in user_time..(user_time + service_length)
+                DshsData.instance.service_providers[user_sp]['availability'][user_day][index] = false
+            end
         end
 
         DshsData.instance.create_appointment(user_date, user_time, user_service, user_sp, user_name)
