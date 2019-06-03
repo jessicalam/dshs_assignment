@@ -49,7 +49,7 @@ class DshsData
                                     "wednesday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
                                     "thursday" => [true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true],
                                     "friday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
-                                    "saturday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+                                    "saturday" => [false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
                                     "sunday" => [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
                                 }
             }
@@ -65,11 +65,18 @@ class DshsData
         ]
         @availability_blocks = [
             {
-                "name" => "",
-                "date" => "",
-                "start_time" => "",
-                "end_time" => "",
-                "is_available" => "",
+                "service_provider_name" => "yeet",
+                "date" => 18236,
+                "start_time" => 0,
+                "end_time" => 7,
+                "is_available" => false,
+            },
+            {
+                "service_provider_name" => "yeet",
+                "date" => 18237,
+                "start_time" => 0,
+                "end_time" => 3,
+                "is_available" => true,
             }
         ]
     end
