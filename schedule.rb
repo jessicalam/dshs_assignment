@@ -12,12 +12,12 @@ def prompt_view_sch
     puts "----------"
     puts "Please select a SERVICE PROVIDER to view their appointments"
 
-    # Shows each Provider Name for each
+    # Shows each Service Provider
     appointments.each do |app|
       puts "-      " + app['service_provider_name'].green
     end
 
-    # Get Service Provider Name
+    # Get Service Provider Info based off of User Input
     name_is_valid = false
     while !name_is_valid do
       service_provider_name_in = prompt.ask('Service provider name:')
@@ -30,6 +30,8 @@ def prompt_view_sch
           puts "Client Name: " + app['client_name']
           puts "Start Time: " + app['start_time'].to_s
           puts "--  "
+        elsif app["service_provider_name"] == "back"
+          main.rb
         else
           puts "There is no Service Provider with that name"
         end
