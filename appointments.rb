@@ -3,6 +3,23 @@ require 'date'
 require 'colorize'
 
 
+# if recurring, check base schedule, if no conflicts, check appointments -> no need to check availability_blocks
+# if one-off, check availability blocks, if none, check base schedule, then appointments
+
+# Scenarios to test:
+#   recurring appointments:
+#       conflict with sp's base availability
+#       conflict with sp's availability blocks
+#       conflict with sp's appointments
+#       no conflicts -- should create appointment and (change sp's base availability or add recurring availability block)
+#   one-off appointments:
+#       conflict with sp's base availability
+#       conflict with sp's availability blocks
+#       conflict with sp's appointments
+#       no conflicts -- should create appointment
+
+
+
 def create_app
     prompt = TTY::Prompt.new
 
@@ -26,6 +43,13 @@ def create_app
 
     user_sp = prompt.select("Which service provider are you making an appointment with?", possible_service_providers, cycle: true)
 
+    recurring_or_one_off = prompt.select("Is this a recurring (weekly) appointment? Or a one-off appointment?", ['recurring', 'one-off'], cycle: true)
+    if recurring_or_one_off == 'recurring'
+        is_recurring = true
+    else
+        is_recurring = false
+    end
+
     # what date and time? reoccurring or one-off appointment? check for conflicts while doing so
     conflict_exists = true
     while conflict_exists do
@@ -48,6 +72,7 @@ def create_app
         when 7
             user_day = 'sunday'
         else
+            puts base_day
             puts 'invalid day'
         end
         user_date = Date.strptime(base_date, "%m/%d/%Y").to_time.to_i / (60 * 60 * 24)
@@ -62,38 +87,52 @@ def create_app
             user_time += 12
         end
 
+        # check for conflicts in service_provider's availability blocks
+        should_continue = false
+        base_availability_override = false
+        DshsData.instance.availability_blocks.each do |av|
+            # possibly remove if and elsif, and convert else into one if statement
+            # if is_recurring && av['date'].to_day() != user_day
+                # next
+            # if av['date'] != user_date || av['service_provider_name'] != user_sp # make this line elsif
+            #     next
+            if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
+                if user_time >= av['start_time'] && user_time < av['end_time']
+                    if av['is_available'] && !is_recurring
+                        base_availability_override = true
+                        break
+                    elsif av['is_available'] && is_recurring
+                        next
+                    else
+                        puts 'The service provider you requested is not available at this time.'.red
+                        puts 'Please choose a different date/time or \'q\' to quit.'.red
+                        should_continue = true
+                        break
+                    end
+                end
+            end
+        end
+        next if should_continue
+
         # check for conflicts in service_provider's base availability
-        if !DshsData.instance.service_providers[user_sp]['availability'][user_day][user_time]
+        if !DshsData.instance.service_providers[user_sp]['availability'][user_day][user_time] && !base_availability_override
             puts 'The service provider you requested is not available at this time.'.red
-            puts 'Please choose a different time or \'q\' to quit.'.red
+            puts 'Please choose a different date/time or \'q\' to quit.'.red
             next
         end
 
         # check for conflicts in service_provider's appointments on specified day
         should_continue = false
         DshsData.instance.appointments.each do |app|
-            if app['date'] != user_date || app['service_provider_name'] != user_sp
-                next
-            else
-                if user_time > app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
+            # possibly remove if and elsif, and convert else into one if statement
+            # if is_recurring && av['date'].to_day() != user_day
+                # next
+            # if app['date'] != user_date || app['service_provider_name'] != user_sp # make this line elsif
+            #     next
+            if (!is_recurring && app['date'] == user_date && app['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(app['date']) == user_day)
+                if user_time >= app['start_time'] && user_time < (app['start_time'] + DshsData.instance.services[app['service_name']]['length'])
                     puts 'The service provider you requested already has an appointment at this time.'.red
-                    puts 'Please choose a different time or \'q\' to quit.'.red
-                    should_continue = true
-                    break
-                end
-            end
-        end
-        next if should_continue
-
-        # check for conflicts in service_provider's availability blocks
-        should_continue = false
-        DshsData.instance.availability_blocks.each do |av|
-            if av['date'] != user_date || av['service_provider_name'] != user_sp
-                next
-            else
-                if user_time > av['start_time'] && user_time < av['end_time']
-                    puts 'The service provider you requested is not available at this time.'.red
-                    puts 'Please choose a different time or \'q\' to quit.'.red
+                    puts 'Please choose a different date/time or \'q\' to quit.'.red
                     should_continue = true
                     break
                 end
@@ -106,6 +145,37 @@ def create_app
 
     # if none, add to appointments array
     if !conflict_exists
+        if is_recurring
+            # change sp's base availability
+            for index in user_time..(user_time + service_length)
+                DshsData.instance.service_providers[user_sp]['availability'][user_day][index] = false
+            end
+        end
+
         DshsData.instance.create_appointment(user_date, user_time, user_service, user_sp, user_name)
+    end
+end
+
+
+def convert_date_to_day(days_since_epoch)
+    weekday = days_since_epoch % 7
+    case weekday
+    when 0
+        'thursday'
+    when 1
+        'friday'
+    when 2
+        'saturday'
+    when 3
+        'sunday'
+    when 4
+        'monday'
+    when 5
+        'tuesday'
+    when 6
+        'wednesday'
+    else
+        puts 'weekday ' + weekday
+        puts 'invalid day'
     end
 end
