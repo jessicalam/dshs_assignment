@@ -23,6 +23,7 @@ require 'colorize'
 def create_app
     prompt = TTY::Prompt.new
 
+    # get services and service providers
     service_names = DshsData.instance.services.keys
     service_provider_names = DshsData.instance.service_providers.keys
 
@@ -43,6 +44,7 @@ def create_app
 
     user_sp = prompt.select("Which service provider are you making an appointment with?", possible_service_providers, cycle: true)
 
+    # determine whether this appointment is recurring or one-off
     recurring_or_one_off = prompt.select("Is this a recurring (weekly) appointment? Or a one-off appointment?", ['recurring', 'one-off'], cycle: true)
     if recurring_or_one_off == 'recurring'
         is_recurring = true
@@ -50,11 +52,12 @@ def create_app
         is_recurring = false
     end
 
-    # what date and time? reoccurring or one-off appointment? check for conflicts while doing so
+    # what date and time? check for conflicts while doing so
     conflict_exists = true
     while conflict_exists do
         base_date = prompt.ask("Appointment date (MM/DD/YYYY):")
         break if base_date == 'q'
+        # which day of the week did they specify?
         base_day = Date.strptime(base_date, "%m/%d/%Y").cwday
         case base_day
         when 1
@@ -75,6 +78,8 @@ def create_app
             puts base_day
             puts 'invalid day'
         end
+
+        # convert date to number of days since epoch
         user_date = Date.strptime(base_date, "%m/%d/%Y").to_time.to_i / (60 * 60 * 24)
 
         base_time = prompt.ask("Appointment start time (ex: 10am or 2pm):")
@@ -94,6 +99,9 @@ def create_app
             if (!is_recurring && av['date'] == user_date && av['service_provider_name'] == user_sp) || (is_recurring && convert_date_to_day(av['date']) == user_day)
                 if user_time >= av['start_time'] && user_time < av['end_time']
                     if av['is_available'] && !is_recurring
+                        # the override flag is set to denote that availability blocks take
+                        # precedence over base availability - this is used when checking
+                        # for conflicts in the service_provider's base availability
                         base_availability_override = true
                         break
                     elsif av['is_available'] && is_recurring
@@ -107,6 +115,8 @@ def create_app
                 end
             end
         end
+        # should_continue happens if the time requested has conflicts
+        # this line ends the current iteration of the loop and asks for a new date/time
         next if should_continue
 
         # check for conflicts in service_provider's base availability
@@ -128,15 +138,17 @@ def create_app
                 end
             end
         end
+        # should_continue happens if the time requested has conflicts
+        # this line ends the current iteration of the loop and asks for a new date/time
         next if should_continue
 
         conflict_exists = false
     end
 
-    # if none, add to appointments array
+    # if no conflicts, add to appointments array
     if !conflict_exists
         if is_recurring
-            # change sp's base availability
+            # change service provider's base availability for a recurring appointment
             for index in user_time..(user_time + service_length - 1)
                 DshsData.instance.service_providers[user_sp]['availability'][user_day][index] = false
             end
@@ -147,7 +159,7 @@ def create_app
 end
 
 
-def convert_date_to_day(days_since_epoch) #number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970
+def convert_date_to_day(days_since_epoch) # days_since_epoch = number of days that have elapsed since Thursday, 1 January 1970
     weekday = days_since_epoch % 7
     case weekday
     when 0

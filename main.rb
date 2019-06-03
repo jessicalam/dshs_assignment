@@ -5,6 +5,7 @@ require_relative 'appointments'
 require_relative 'availability'
 require_relative 'schedule'
 require_relative 'data'
+require_relative 'print'
 
 
 
